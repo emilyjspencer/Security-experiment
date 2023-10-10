@@ -1,8 +1,8 @@
 package com.example.securityexperiment.services;
 
 import com.example.securityexperiment.DTOs.LoginResponseDTO;
+import com.example.securityexperiment.entities.GenericUser;
 import com.example.securityexperiment.entities.Role;
-import com.example.securityexperiment.entities.User;
 import com.example.securityexperiment.repositories.RoleRepository;
 import com.example.securityexperiment.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,35 +34,33 @@ public class AuthenticationService {
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    private JwtService jwtService;
+    private JwtService tokenService;
 
-    public User registerUser(String username, String password, String userAuthority){
-        // hash the password
+    public GenericUser registerUser(String username, String password, String roleAuthority) {
+
         String encodedPassword = passwordEncoder.encode(password);
-        // assign role based on what's been passed in
-        Role userRole = roleRepository.findByAuthority(userAuthority).orElse(null);
+        Role userRole = roleRepository.findByAuthority(roleAuthority).orElse(null);
 
-        if(userRole == null) {
-            throw new IllegalArgumentException("Invalid role specified: " + userAuthority);
+        if (userRole == null) {
+            // Handle the case where the specified role does not exist
+            throw new IllegalArgumentException("Invalid role specified: " + roleAuthority);
         }
 
         Set<Role> authorities = new HashSet<>();
-
         authorities.add(userRole);
 
-        return userRepository.save(new User(0, username, encodedPassword, authorities));
+        return userRepository.save(new GenericUser(0, username, encodedPassword, authorities));
     }
 
     public LoginResponseDTO loginUser(String username, String password){
 
-        try{ // try to authenticate by checking the credentials against the provider - database
-            // check that the username and password is create
+        try{
             Authentication auth = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(username, password)
             );
-            // if the username and password is correct - generate jwt
-            String token = jwtService.generateJwt(auth);
-            // get the user by the username and return the user and the token back to the frontend
+
+            String token = tokenService.generateJwt(auth);
+
             return new LoginResponseDTO(userRepository.findByUsername(username).get(), token);
 
         } catch(AuthenticationException e){

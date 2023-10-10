@@ -19,8 +19,6 @@ public class JwtService {
     @Autowired
     private JwtEncoder jwtEncoder;
 
-    @Autowired
-    private JwtDecoder jwtDecoder;
 
     public String generateJwt(Authentication auth){
 

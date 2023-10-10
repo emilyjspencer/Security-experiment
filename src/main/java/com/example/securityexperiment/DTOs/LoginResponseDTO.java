@@ -1,25 +1,26 @@
 package com.example.securityexperiment.DTOs;
 
-import com.example.securityexperiment.entities.User;
+import com.example.securityexperiment.entities.GenericUser;
+
 
 public class LoginResponseDTO {
-    private User user;
+    private GenericUser user;
     private String jwt;
 
     public LoginResponseDTO(){
         super();
     }
 
-    public LoginResponseDTO(User user, String jwt){
+    public LoginResponseDTO(GenericUser user, String jwt){
         this.user = user;
         this.jwt = jwt;
     }
 
-    public User getUser(){
+    public GenericUser getUser(){
         return this.user;
     }
 
-    public void setUser(User user){
+    public void setUser(GenericUser user){
         this.user = user;
     }
 

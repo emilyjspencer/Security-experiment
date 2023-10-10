@@ -39,15 +39,36 @@ uses UserDetailsSevice to look up the username, password and granted authority
 
 public and private keys
 
-# Passwordencoder - used to hash the password
+# Passwordencoder 
 
-# Jwtencoder - encodes the JWTs
+ used to hash the password
 
-# Jwtdecoder - used to deode the JWTs
+# Jwtencoder 
+
+encodes the JWTs
+
+# Jwtdecoder 
+
+used to deode the JWTs
 
 
 
-# Jwtclaimsset - contains the information that the JWTs hold themselves
+# Jwtclaimsset 
+
+contains the information that the JWTs hold themselves
+
+# RSA Key encryption
+Sender encrypts the data they are sending using the algorithm
+REceiver receives the data and decrypts it
+
+public key = used for encryption
+
+private key = used for decryption
+
+If the sender wants to send a message, they need to get hold of the receiver's public key to encrypt the data before sending
+Receiver receives the message, and decrypts the data using their private key
+
+
 
 # Authorities
 

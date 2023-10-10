@@ -1,7 +1,7 @@
 package com.example.securityexperiment;
 
+import com.example.securityexperiment.entities.GenericUser;
 import com.example.securityexperiment.entities.Role;
-import com.example.securityexperiment.entities.User;
 import com.example.securityexperiment.repositories.RoleRepository;
 import com.example.securityexperiment.repositories.UserRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -35,7 +35,7 @@ public class SecurityexperimentApplication {
 			roles.add(adminRole);
 
 			// create a user that is of type admin
-			User admin = new User(1, "admin", passwordEncode.encode("password"), roles);
+			GenericUser admin = new GenericUser(1, "admin", passwordEncode.encode("password"), roles);
 			// save that to the database
 			userRepository.save(admin);
 		};

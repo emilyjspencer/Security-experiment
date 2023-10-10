@@ -1,12 +1,13 @@
 package com.example.securityexperiment.config;
 
+
 import com.example.securityexperiment.utilities.RSAKeyProperties;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
-import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import com.nimbusds.jose.jwk.source.JWKSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,6 +15,7 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,30 +27,24 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 @Configuration
-public class SecurityConfig {
+public class SecurityConfig{
 
     private final RSAKeyProperties keys;
-    // used to sign the jwt
 
     public SecurityConfig(RSAKeyProperties keys){
         this.keys = keys;
     }
 
-    @Bean // used to hash password
+    @Bean
     public PasswordEncoder passwordEncoder(){
-
         return new BCryptPasswordEncoder();
     }
 
-    // userdetailsservice has loadbyusername which returns a userdetailsobject
-    // with info about the user's authentication and authorization
-    // what is an authentication provider - authenticates a user's credetnails and
-    // returns an authentication object that represents the authenticated user
-    // userdetailsservice is used to load a user from the database
     @Bean
     public AuthenticationManager authManager(UserDetailsService detailsService){
-        // we are using DaoAuthenticationProvider
         DaoAuthenticationProvider daoProvider = new DaoAuthenticationProvider();
         daoProvider.setUserDetailsService(detailsService);
         daoProvider.setPasswordEncoder(passwordEncoder());
@@ -60,13 +56,11 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/auth/**").permitAll();
-                    auth.requestMatchers("/admin/**").hasRole("ADMIN");
-                    //auth.requestMatchers("/user/**").hasAnyRole("ADMIN", "USER", "CONSULTANT", "ACCOUNT_MANAGER");
-                    auth.requestMatchers("/consultant/**").hasAnyRole("ADMIN","CONSULTANT");
-                    auth.requestMatchers("/accountManager/**").hasAnyRole("ADMIN", "ACCOUNT_MANAGER");
-                    auth.anyRequest().authenticated(); // all other urls you must be authenticated for
-                    // will also add the permissions for GET PUT POST DELETE for each role
+                    auth.antMatchers("/auth/**").permitAll();
+                    auth.antMatchers("/admin/**").hasRole("ADMIN");
+                    auth.antMatchers("/consultant/**").hasAnyRole("ADMIN", "CONSULTANT");
+                    auth.antMatchers("/account-manager/**").hasAnyRole("ADMIN", "ACCOUNT_MANAGER");
+                    auth.anyRequest().authenticated();
                 });
 
         http.oauth2ResourceServer()
@@ -81,7 +75,6 @@ public class SecurityConfig {
 
     @Bean
     public JwtDecoder jwtDecoder(){
-
         return NimbusJwtDecoder.withPublicKey(keys.getPublicKey()).build();
     }
 
@@ -103,4 +96,3 @@ public class SecurityConfig {
     }
 
 }
-

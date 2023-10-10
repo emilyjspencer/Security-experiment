@@ -1,14 +1,14 @@
 package com.example.securityexperiment.entities;
-
-import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
+
+import javax.persistence.*;
 
 @Entity
 @Table(name="roles")
 public class Role implements GrantedAuthority {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.AUTO)
     @Column(name="role_id")
     private Integer roleId;
 
